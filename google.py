@@ -70,16 +70,40 @@ def text_to_wav(voice_name: str, text: str, play=False):
 
     return filename
 
+def chatRespond(username: str, message: str):
+    base = "You are a Twitch streamer, responding to a chat message. Keep it to two sentence or less. The message reads: "
+    response = bot.ask(base + message)
+    return username + " said " + message + ". " + response
+
+def randomFun():
+    message = "You are Twitch streamer, trying to kill time. Say something interesting and unique in two sentences or less."
+    return bot.ask(message)
+
+def randomStory():
+    message = "You are a Twitch streamer, telling a story. Keep it to two sentences or less, and make it relatable."
+    return bot.ask(message)
+
 bot = ChatGPT()
 
 print("Bot is set up!")
 
 while True:
+    response = None
     message = input("Message: ")
+    
     if message == "!exit":
         break
-    response = bot.ask(message)
-    filename = text_to_wav("en-US-News-M", response, True)
-    print("Response:", response, "(" + filename + ")")
+    elif message == "!fun":
+        response = randomFun()
+    elif message == "!story":
+        reponse = randomStory()
+    elif message[:6] == "!chat ":
+        response = chatRespond("Bean", message[6:])
+    else:
+        response = bot.ask(message)
+        
+    if response is not None:
+        filename = text_to_wav("en-US-News-M", response, True)
+        print("Response:", response, "(" + filename + ")")
 
 print("Goodbye!")
