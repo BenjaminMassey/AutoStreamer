@@ -3,6 +3,10 @@ import os
 from datetime import datetime
 from playsound import playsound
 from chatgpt_wrapper import ChatGPT
+from twitchio.ext import commands
+import threading
+import asyncio
+import time
 
 key_file = open("google_key_path.txt", 'r')
 key_data = key_file.read()
@@ -71,21 +75,79 @@ def text_to_wav(voice_name: str, text: str, play=False):
     return filename
 
 def chatRespond(username: str, message: str):
-    base = "You are a Twitch streamer, responding to a chat message. Keep it to two sentence or less. The message reads: "
-    response = bot.ask(base + message)
+    base = "You are a Twitch streamer, responding to a chat message. Keep it to two sentences or less. The message reads: "
+    response = ai_bot.ask(base + message)
     return username + " said " + message + ". " + response
 
 def randomFun():
     message = "You are Twitch streamer, trying to kill time. Say something interesting and unique in two sentences or less."
-    return bot.ask(message)
+    return ai_bot.ask(message)
 
 def randomStory():
     message = "You are a Twitch streamer, telling a story. Keep it to two sentences or less, and make it relatable."
-    return bot.ask(message)
+    return ai_bot.ask(message)
 
-bot = ChatGPT()
+class TwitchBot(commands.Bot):
 
-print("Bot is set up!")
+    latest = ("", "")
+
+    def __init__(self, auth, channel):
+        super().__init__(
+            token=auth,
+            prefix='?',
+            initial_channels=[channel]
+        )
+
+    async def event_ready(self):
+        print(f'Logged in as | {self.nick}')
+        print(f'User id is | {self.user_id}')
+
+    async def event_message(self, message):
+        if message.echo:
+            return
+        
+        user = str(message.author.name)
+        msg = str(message.content)
+
+        self.latest = (user, msg)
+        
+        print(user + " says '" + msg + "'.")
+        
+        await self.handle_commands(message)
+
+    @commands.command()
+    async def hello(self, ctx: commands.Context):
+        await ctx.send(f'Hello {ctx.author.name}!')
+
+ai_bot = ChatGPT()
+
+print("ChatGPT AI Bot is set up!")
+
+twitch_data_file = open("./twitch_data.txt", "r")
+auth = twitch_data_file.readline().replace("\n","").replace(" ", "")
+channel = twitch_data_file.readline().replace("\n","").replace(" ", "")
+twitch_data_file.close()
+
+class TwitchThread(threading.Thread):
+    
+    def __init__(self, auth, channel):
+        threading.Thread.__init__(self)
+        self.bot = TwitchBot(auth, channel)
+        
+    def run(self):
+        try:
+            asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(self.bot.run())
+        except:
+            pass
+
+
+twitch_thread = TwitchThread(auth, channel)
+twitch_thread.start()
+
+print ("Twitch Bot is set up!")
 
 while True:
     response = None
@@ -96,14 +158,21 @@ while True:
     elif message == "!fun":
         response = randomFun()
     elif message == "!story":
-        reponse = randomStory()
+        response = randomStory()
     elif message[:6] == "!chat ":
-        response = chatRespond("Bean", message[6:])
+        response = chatRespond("Developer", message[6:])
+    elif message == "!twitch":
+        response = chatRespond(twitch_thread.bot.latest[0],\
+                               twitch_thread.bot.latest[1])
     else:
-        response = bot.ask(message)
+        response = ai_bot.ask(message)
         
     if response is not None:
         filename = text_to_wav("en-US-News-M", response, True)
         print("Response:", response, "(" + filename + ")")
 
+text_to_wav("en-US-News-M", "Goodbye!", True)
+
 print("Goodbye!")
+
+time.sleep(1)
