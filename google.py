@@ -2,6 +2,7 @@ import google.cloud.texttospeech as tts
 import os
 from datetime import datetime
 from playsound import playsound
+from chatgpt_wrapper import ChatGPT
 
 key_file = open("google_key_path.txt", 'r')
 key_data = key_file.read()
@@ -63,9 +64,22 @@ def text_to_wav(voice_name: str, text: str, play=False):
     filename = directory + voice_name + time_str + ".wav"
     with open(filename, "wb") as out:
         out.write(response.audio_content)
-        print(f'Generated speech saved to "{filename}"')
-
+        
     if play:
         playsound(filename)
 
-text_to_wav("en-US-News-M", "yo what be up fam? bussin for real for real on god", True)
+    return filename
+
+bot = ChatGPT()
+
+print("Bot is set up!")
+
+while True:
+    message = input("Message: ")
+    if message == "!exit":
+        break
+    response = bot.ask("hello")
+    filename = text_to_wav("en-US-News-M", response, True)
+    print("Response:", response, "(" + filename + ")")
+
+print("Goodbye!")
