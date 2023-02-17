@@ -1,6 +1,6 @@
 # Libraries
 from chatgpt_wrapper import ChatGPT
-import time, os
+import time, os, random
 
 # Project Files
 import speech, chat
@@ -16,8 +16,13 @@ ai_bot = ChatGPT()
 print("ChatGPT AI Bot is set up!")
 
 while True:
+    options = ["!fun", "!story", "!twitch"]
+    message = options[random.randint(0, len(options) - 1)]
+    print("Bot chose:", message)
+    
+    #message = input("Input: ")
+    
     response = None
-    message = input("Input: ")
     
     if message == "!exit":
         break
@@ -44,6 +49,8 @@ while True:
     if response is not None:
         filename = speech.text_to_wav("en-US-News-M", response, True)
         print("Response:", response, "(" + filename + ")")
+    
+    time.sleep(3)
 
 speech.text_to_wav("en-US-News-M", "Goodbye!", True)
 

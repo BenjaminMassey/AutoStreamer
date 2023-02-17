@@ -1,16 +1,13 @@
 
 def respond(bot, username, message):
-    base = base("respond")
-    response = bot.ask(base + message)
+    response = bot.ask(base("respond") + message)
     return username + " said " + message + ". " + response
 
 def fun(bot):
-    message = base("fun")
-    return bot.ask(message)
+    return bot.ask(base("fun"))
 
 def story(bot):
-    message = base("story")
-    return bot.ask(message)
+    return bot.ask(base("story"))
     
 def base(key):
     result = ""
