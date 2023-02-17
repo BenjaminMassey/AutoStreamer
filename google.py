@@ -78,7 +78,7 @@ while True:
     message = input("Message: ")
     if message == "!exit":
         break
-    response = bot.ask("hello")
+    response = bot.ask(message)
     filename = text_to_wav("en-US-News-M", response, True)
     print("Response:", response, "(" + filename + ")")
 
