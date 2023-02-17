@@ -1,14 +1,22 @@
-# TODO: system of text file reading and handling to avoid hardcoded string
 
 def respond(bot, username, message):
-    base = "You are a Twitch streamer, responding to a chat message. Keep it to two sentences or less. The message reads: "
+    base = base("respond")
     response = bot.ask(base + message)
     return username + " said " + message + ". " + response
 
 def fun(bot):
-    message = "You are Twitch streamer, trying to kill time. Say something interesting and unique in two sentences or less."
+    message = base("fun")
     return bot.ask(message)
 
 def story(bot):
-    message = "You are a Twitch streamer, telling a story. Keep it to two sentences or less, and make it relatable."
+    message = base("story")
     return bot.ask(message)
+    
+def base(key):
+    result = ""
+    file = open("bases.txt", "r")
+    for line in file:
+        data = line.split(" ::: ")
+        if len(data) == 2 and data[0] == key:
+            result = data[1]
+    return result
