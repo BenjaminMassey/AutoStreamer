@@ -37,6 +37,8 @@ while True:
         response = chat.story(ai_bot)
     elif message[:6] == "!chat ":
         response = chat.respond(ai_bot,"Developer", message[6:])
+    elif message[:6] == "!test ":
+        response = message[6:]
     elif message == "!twitch":
         response = chat.respond(ai_bot,\
                                 twitch_thread.bot.latest[0],\
@@ -48,7 +50,7 @@ while True:
         filename = speech.text_to_wav("en-US-News-M", response, True)
         print("Response:", response, "(" + filename + ")")
 
-text_to_wav("en-US-News-M", "Goodbye!", True)
+speech.text_to_wav("en-US-News-M", "Goodbye!", True)
 
 print("Goodbye!")
 
