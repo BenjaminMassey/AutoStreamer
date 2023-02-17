@@ -1,9 +1,9 @@
 # Libraries
 from chatgpt_wrapper import ChatGPT
-import threading, time
+import time, os
 
 # Project Files
-import speech, twitch, chat, os
+import speech, chat
 
 key_file = open("google_key_path.txt", 'r')
 key_data = key_file.read()
@@ -14,16 +14,6 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = key_data
 ai_bot = ChatGPT()
 
 print("ChatGPT AI Bot is set up!")
-
-twitch_data_file = open("./twitch_data.txt", "r")
-auth = twitch_data_file.readline().replace("\n","").replace(" ", "")
-channel = twitch_data_file.readline().replace("\n","").replace(" ", "")
-twitch_data_file.close()
-
-twitch_thread = twitch.TwitchThread(auth, channel)
-twitch_thread.start()
-
-print ("Twitch Bot is set up!")
 
 while True:
     response = None
@@ -40,9 +30,14 @@ while True:
     elif message[:6] == "!test ":
         response = message[6:]
     elif message == "!twitch":
-        response = chat.respond(ai_bot,\
-                                twitch_thread.bot.latest[0],\
-                                twitch_thread.bot.latest[1])
+        twitchfile = open("latest.txt", "r")
+        data = twitchfile.read().split(" ::: ")
+        twitchfile.close()
+        if len(data) == 2:
+            response = chat.respond(ai_bot, data[0], data[1])
+        else:
+            print("Broken data from twitch file 'latest.txt'")
+            continue
     else:
         response = ai_bot.ask(message)
         
@@ -54,4 +49,4 @@ speech.text_to_wav("en-US-News-M", "Goodbye!", True)
 
 print("Goodbye!")
 
-time.sleep(1)
+time.sleep(2)

@@ -1,16 +1,16 @@
 from twitchio.ext import commands
-import threading, asyncio
 
 class TwitchBot(commands.Bot):
 
-    latest = ("", "")
+    filename = ""
 
-    def __init__(self, auth, channel):
+    def __init__(self, auth, channel, filename):
         super().__init__(
             token=auth,
             prefix='?',
             initial_channels=[channel]
         )
+        self.filename = filename
 
     async def event_ready(self):
         print(f'Logged in as | {self.nick}')
@@ -22,8 +22,10 @@ class TwitchBot(commands.Bot):
         
         user = str(message.author.name)
         msg = str(message.content)
-
-        self.latest = (user, msg)
+        
+        file = open(self.filename, "w")
+        file.write(user + " ::: " + msg)
+        file.close()
         
         print(user + " says '" + msg + "'.")
         
@@ -33,17 +35,16 @@ class TwitchBot(commands.Bot):
     async def hello(self, ctx: commands.Context):
         await ctx.send(f'Hello {ctx.author.name}!')
 
-class TwitchThread(threading.Thread):
-    
-    def __init__(self, auth, channel):
-        threading.Thread.__init__(self)
-        self.bot = TwitchBot(auth, channel)
-        
-    def run(self):
-        try:
-            asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.run_until_complete(self.bot.run())
-        except:
-            pass
+
+twitch_data_file = open("./twitch_data.txt", "r")
+auth = twitch_data_file.readline().replace("\n","").replace(" ", "")
+channel = twitch_data_file.readline().replace("\n","").replace(" ", "")
+twitch_data_file.close()
+
+filename = "latest.txt"
+
+bot = TwitchBot(auth, channel, filename)
+
+print("Twitch Bot is set up!")
+
+bot.run()

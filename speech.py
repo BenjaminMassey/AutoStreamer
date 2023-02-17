@@ -3,6 +3,38 @@ from datetime import datetime
 from playsound import playsound
 import os
 
+def text_to_wav(voice_name: str, text: str, play=False):
+    language_code = "-".join(voice_name.split("-")[:2])
+    text_input = tts.SynthesisInput(text=text)
+    voice_params = tts.VoiceSelectionParams(
+        language_code=language_code, name=voice_name
+    )
+    audio_config = tts.AudioConfig(audio_encoding=tts.AudioEncoding.LINEAR16)
+
+    client = tts.TextToSpeechClient()
+    response = client.synthesize_speech(
+        input=text_input, voice=voice_params, audio_config=audio_config
+    )
+
+    now = datetime.now()
+    time_str = now.strftime("--%m-%d-%Y--%H-%M-%S")
+
+    directory = "./out/"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    
+    filename = directory + voice_name + time_str + ".wav"
+    with open(filename, "wb") as out:
+        out.write(response.audio_content)
+        
+    if play:
+        playsound(filename)
+
+    return filename
+    
+# Below functions are not used in the primary program,
+# and are simply left for developer usage.
+
 def unique_languages_from_voices(voices):
     language_set = set()
     for voice in voices:
@@ -34,31 +66,4 @@ def list_voices(language_code=None):
         print(f"{languages:<8} | {name:<24} | {gender:<8} | {rate:,} Hz")
 
 
-def text_to_wav(voice_name: str, text: str, play=False):
-    language_code = "-".join(voice_name.split("-")[:2])
-    text_input = tts.SynthesisInput(text=text)
-    voice_params = tts.VoiceSelectionParams(
-        language_code=language_code, name=voice_name
-    )
-    audio_config = tts.AudioConfig(audio_encoding=tts.AudioEncoding.LINEAR16)
 
-    client = tts.TextToSpeechClient()
-    response = client.synthesize_speech(
-        input=text_input, voice=voice_params, audio_config=audio_config
-    )
-
-    now = datetime.now()
-    time_str = now.strftime("--%m-%d-%Y--%H-%M-%S")
-
-    directory = "./out/"
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-    
-    filename = directory + voice_name + time_str + ".wav"
-    with open(filename, "wb") as out:
-        out.write(response.audio_content)
-        
-    if play:
-        playsound(filename)
-
-    return filename

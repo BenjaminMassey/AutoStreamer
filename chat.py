@@ -1,3 +1,4 @@
+# TODO: system of text file reading and handling to avoid hardcoded string
 
 def respond(bot, username, message):
     base = "You are a Twitch streamer, responding to a chat message. Keep it to two sentences or less. The message reads: "

@@ -3,4 +3,4 @@ __pycache__/
 /out/
 google_key_path.txt
 twitch_data.txt
-*.bat
+latest.txt
