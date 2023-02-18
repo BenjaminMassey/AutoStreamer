@@ -32,8 +32,8 @@ if do_mupen:
 
     def setResetTime():
         global reset_time
-        #time_range = (1 * 60, 46 * 60) # from 1 minute to 46 minutes (in seconds)
-        time_range = (2 * 60, 7 * 60) # from 1 minute to 46 minutes (in seconds)
+        time_range = (1 * 60, 46 * 60) # from 1 minute to 46 minutes (in seconds)
+        #time_range = (2 * 60, 3 * 60) # from 2 minutes to 3 minutes (in seconds) (debug)
         run_rng = random.randint(1, 100)
         if run_rng != 100:
             reset_time = ((time_range[1] - time_range[0]) * (run_rng / 100)) + time_range[0]
