@@ -28,6 +28,8 @@ Some important links will be:
 - https://livesplit.org/
 - https://github.com/LiveSplit/LiveSplit.Server
 - https://code.google.com/archive/p/mupen64-rr/downloads
+- https://youtu.be/V7DK7NrmMPY
+- https://obsproject.com/forum/resources/move-transition.913/
 
 ## Usage
 
