@@ -52,8 +52,10 @@ if do_mupen:
 print("Started!")
 
 while True:
-    options = ["!fun", "!story", "!twitch"]
+    options = ["!fun", "!story", "!joke", "!mario"]
     message = options[random.randint(0, len(options) - 1)]
+    if random.random() < float(eval(app_settings.get("twitch_chance"))):
+        message = "!twitch"
     print("Bot chose:", message)
     
     #message = input("Input: ")
@@ -69,9 +71,13 @@ while True:
     if message == "!exit":
         break
     elif message == "!fun":
-        response = chat.fun(ai_bot, app_settings)
+        response = chat.direct("fun", ai_bot, app_settings)
     elif message == "!story":
-        response = chat.story(ai_bot, app_settings)
+        response = chat.direct("story", ai_bot, app_settings)
+    elif message == "!joke":
+        response = chat.direct("joke", ai_bot, app_settings)
+    elif message == "!mario":
+        response = chat.direct("mario", ai_bot, app_settings)
     elif message[:6] == "!chat ":
         response = chat.respond(ai_bot, "Developer", message[6:], app_settings)
     elif message[:6] == "!test ":
@@ -88,7 +94,7 @@ while True:
     elif do_mupen and message == "!reset":
         time.sleep(2)
         mupen.end_run()
-        response = chat.reset(ai_bot, app_settings)
+        response = chat.direct("reset", ai_bot, app_settings)
         reset = True
     else:
         response = ai_bot.ask(message)
