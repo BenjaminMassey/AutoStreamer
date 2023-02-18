@@ -1,7 +1,7 @@
 # Libraries
 from chatgpt_wrapper import ChatGPT
 from datetime import datetime
-import time, os, random
+import time, os, random, livesplit
 
 # Project Files
 import speech, chat, mupen
@@ -28,9 +28,12 @@ print("ChatGPT AI Bot is set up!")
 
 if do_mupen:
 
+    ls = livesplit.Livesplit()
+
     def setResetTime():
         global reset_time
-        time_range = (1 * 60, 46 * 60) # from 1 minute to 46 minutes (in seconds)
+        #time_range = (1 * 60, 46 * 60) # from 1 minute to 46 minutes (in seconds)
+        time_range = (2 * 60, 7 * 60) # from 1 minute to 46 minutes (in seconds)
         run_rng = random.randint(1, 100)
         if run_rng != 100:
             reset_time = ((time_range[1] - time_range[0]) * (run_rng / 100)) + time_range[0]
@@ -49,6 +52,8 @@ if do_mupen:
     print("Starting run and program...")
 
     mupen.start_tas()
+    
+    ls.startTimer()
 
 print("Started!")
 
@@ -99,7 +104,9 @@ while True:
         print("Response:", response, "(" + filename + ")")
     
     if do_mupen and reset:
+        ls.reset()
         mupen.start_tas()
+        ls.startTimer()
         setResetTime()
         start_time = datetime.now()
         
