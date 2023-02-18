@@ -1,19 +1,56 @@
 # Libraries
 from chatgpt_wrapper import ChatGPT
+from datetime import datetime
 import time, os, random
 
 # Project Files
-import speech, chat
+import speech, chat, mupen
 
 key_file = open("google_key_path.txt", 'r')
 key_data = key_file.read()
 key_file.close()
 
+config_file = open("config.txt", 'r')
+config_data = config_file.read().split(" ::: ")
+config_file.close()
+
+do_mupen = False
+if config_data[0] == "mupen":
+    do_mupen = bool(eval(config_data[1]))
+
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = key_data
+
+print("Loading ChatGPT...")
 
 ai_bot = ChatGPT()
 
 print("ChatGPT AI Bot is set up!")
+
+if do_mupen:
+
+    def setResetTime():
+        global reset_time
+        time_range = (1 * 60, 46 * 60) # from 1 minute to 46 minutes (in seconds)
+        run_rng = random.randint(1, 100)
+        if run_rng != 100:
+            reset_time = ((time_range[1] - time_range[0]) * (run_rng / 100)) + time_range[0]
+        else:
+            reset_time = None
+        print("Reset time set to", reset_time)
+
+    reset_time = None
+    setResetTime()
+    start_time = datetime.now()
+
+    print("Click into mupen64 now")
+
+    time.sleep(3)
+
+    print("Starting run and program...")
+
+    mupen.start_tas()
+
+print("Started!")
 
 while True:
     options = ["!fun", "!story", "!twitch"]
@@ -23,6 +60,12 @@ while True:
     #message = input("Input: ")
     
     response = None
+    reset = False
+    
+    if do_mupen and reset_time is not None and \
+        (datetime.now() - start_time).total_seconds() > reset_time:
+        message = "!reset"
+        print("Actually, RESET")
     
     if message == "!exit":
         break
@@ -43,6 +86,11 @@ while True:
         else:
             print("Broken data from twitch file 'latest.txt'")
             continue
+    elif do_mupen and message == "!reset":
+        time.sleep(2)
+        mupen.end_run()
+        response = chat.reset(ai_bot)
+        reset = True
     else:
         response = ai_bot.ask(message)
         
@@ -50,7 +98,12 @@ while True:
         filename = speech.text_to_wav("en-US-News-M", response, True)
         print("Response:", response, "(" + filename + ")")
     
-    time.sleep(3)
+    if do_mupen and reset:
+        mupen.start_tas()
+        setResetTime()
+        start_time = datetime.now()
+        
+    time.sleep(1)
 
 speech.text_to_wav("en-US-News-M", "Goodbye!", True)
 

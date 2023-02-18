@@ -8,6 +8,9 @@ def fun(bot):
 
 def story(bot):
     return bot.ask(base("story"))
+
+def reset(bot):
+    return bot.ask(base("reset"))
     
 def base(key):
     result = ""

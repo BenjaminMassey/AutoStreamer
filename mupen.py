@@ -24,15 +24,3 @@ def end_run():
     for i in range(100):
         buttons += keys[random.randint(0, len(keys) - 1)]
     pdi.write(buttons, interval=0.025)
-
-time.sleep(5)
-
-start_tas()
-
-time.sleep(70)
-
-end_run()
-
-time.sleep(0.25)
-
-start_tas()
