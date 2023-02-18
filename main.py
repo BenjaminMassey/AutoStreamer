@@ -4,19 +4,13 @@ from datetime import datetime
 import time, os, random, livesplit
 
 # Project Files
-import speech, chat, mupen
+import speech, chat, mupen, settings
 
-key_file = open("google_key_path.txt", 'r')
-key_data = key_file.read()
-key_file.close()
+app_settings = settings.Settings()
 
-config_file = open("config.txt", 'r')
-config_data = config_file.read().split(" ::: ")
-config_file.close()
+do_mupen = bool(eval(app_settings.get("mupen")))
 
-do_mupen = False
-if config_data[0] == "mupen":
-    do_mupen = bool(eval(config_data[1]))
+key_data = app_settings.get("google_path")
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = key_data
 
@@ -51,7 +45,7 @@ if do_mupen:
 
     print("Starting run and program...")
 
-    mupen.start_tas()
+    mupen.start_tas(app_settings)
     
     ls.startTimer()
 
@@ -75,11 +69,11 @@ while True:
     if message == "!exit":
         break
     elif message == "!fun":
-        response = chat.fun(ai_bot)
+        response = chat.fun(ai_bot, app_settings)
     elif message == "!story":
-        response = chat.story(ai_bot)
+        response = chat.story(ai_bot, app_settings)
     elif message[:6] == "!chat ":
-        response = chat.respond(ai_bot,"Developer", message[6:])
+        response = chat.respond(ai_bot, "Developer", message[6:], app_settings)
     elif message[:6] == "!test ":
         response = message[6:]
     elif message == "!twitch":
@@ -87,14 +81,14 @@ while True:
         data = twitchfile.read().split(" ::: ")
         twitchfile.close()
         if len(data) == 2:
-            response = chat.respond(ai_bot, data[0], data[1])
+            response = chat.respond(ai_bot, data[0], data[1], app_settings)
         else:
             print("Broken data from twitch file 'latest.txt'")
             continue
     elif do_mupen and message == "!reset":
         time.sleep(2)
         mupen.end_run()
-        response = chat.reset(ai_bot)
+        response = chat.reset(ai_bot, app_settings)
         reset = True
     else:
         response = ai_bot.ask(message)
@@ -105,7 +99,7 @@ while True:
     
     if do_mupen and reset:
         ls.reset()
-        mupen.start_tas()
+        mupen.start_tas(app_settings)
         ls.startTimer()
         setResetTime()
         start_time = datetime.now()

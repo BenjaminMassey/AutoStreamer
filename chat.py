@@ -1,22 +1,13 @@
 
-def respond(bot, username, message):
-    response = bot.ask(base("respond") + message)
+def respond(bot, username, message, app_settings):
+    response = bot.ask(app_settings.get("respond") + message)
     return username + " said " + message + ". " + response
 
-def fun(bot):
-    return bot.ask(base("fun"))
+def fun(bot, app_settings):
+    return bot.ask(app_settings.get("fun"))
 
-def story(bot):
-    return bot.ask(base("story"))
+def story(bot, app_settings):
+    return bot.ask(app_settings.get("story"))
 
-def reset(bot):
-    return bot.ask(base("reset"))
-    
-def base(key):
-    result = ""
-    file = open("bases.txt", "r")
-    for line in file:
-        data = line.split(" ::: ")
-        if len(data) == 2 and data[0] == key:
-            result = data[1]
-    return result
+def reset(bot, app_settings):
+    return bot.ask(app_settings.get("reset"))

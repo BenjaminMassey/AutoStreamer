@@ -2,14 +2,12 @@ import pyautogui as pag
 import pydirectinput as pdi
 import time, random
 
-def start_tas():
+def start_tas(settings):
     pag.hotkey('ctrl', 'shift', 'p')
     time.sleep(0.025)
     pag.hotkey('ctrl', 'a')
     time.sleep(0.025)
-    file = open("tas_path.txt", "r")
-    path = file.read()
-    file.close()
+    path = settings.get("tas_path")
     pag.write(path, interval=0.0125)
     time.sleep(0.025)
     pag.press('enter')

@@ -1,5 +1,7 @@
 from twitchio.ext import commands
 
+import settings
+
 class TwitchBot(commands.Bot):
 
     filename = ""
@@ -35,11 +37,9 @@ class TwitchBot(commands.Bot):
     async def hello(self, ctx: commands.Context):
         await ctx.send(f'Hello {ctx.author.name}!')
 
-
-twitch_data_file = open("./twitch_data.txt", "r")
-auth = twitch_data_file.readline().replace("\n","").replace(" ", "")
-channel = twitch_data_file.readline().replace("\n","").replace(" ", "")
-twitch_data_file.close()
+app_settings = settings.Settings()
+auth = app_settings.get("twitch_auth")
+channel = app_settings.get("twitch_channel")
 
 filename = "latest.txt"
 
