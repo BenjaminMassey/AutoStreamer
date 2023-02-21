@@ -6,21 +6,26 @@ Auto Streamer seeks to replace the jobs of lazy, greedy streamers. It provides a
 
 ## Example
 
-[![Auto Streamer Exxample](https://img.youtube.com/vi/Vim87nP5ZAI/0.jpg)](https://www.youtube.com/watch?v=Vim87nP5ZAI)
+[![Auto Streamer Example](https://img.youtube.com/vi/Vim87nP5ZAI/0.jpg)](https://www.youtube.com/watch?v=Vim87nP5ZAI)
 
-## Dependencies
+## Installation
 
-Here are the following to "pip install [library_name]":
-- livesplit
-- git+https://github.com/mmabrouk/chatgpt-wrapper
-- datetime
-- twitchio
-- google-cloud-texttospeech
-- playsound
-- pyautogui
-- pydirectinput
+Auto Streamer requires recent Python. You can install its dependencies with
 
-Some important links will be:
+```
+python3 -m pip install -r requirements.txt
+```
+
+## Usage
+
+Depending on your settings, you will probably need to be juggling multiple programs, so it is important to make sure you understand what things must be hooked up.
+
+Without Mupen, setup would be as easy as running "run.bat" if on Windows, or simply "main.py" and "twitch.py" concurrently.
+
+With Mupen, one would need to make sure also be running Mupen64-recorder and their LiveSplit with a server running. Mupen must be the primary window focus to function correctly.
+
+## References
+
 - https://codelabs.developers.google.com/codelabs/cloud-text-speech-python3
 - https://medium.com/geekculture/using-chatgpt-in-python-eeaed9847e72
 - https://github.com/mmabrouk/chatgpt-wrapper
@@ -30,14 +35,6 @@ Some important links will be:
 - https://code.google.com/archive/p/mupen64-rr/downloads
 - https://youtu.be/V7DK7NrmMPY
 - https://obsproject.com/forum/resources/move-transition.913/
-
-## Usage
-
-Depending on your settings, you will probably need to be juggling multiple programs, so it is important to make sure you understand what things must be hooked up.
-
-Without Mupen, setup would be as easy as running "run.bat" if on Windows, or simply "main.py" and "twitch.py" concurrently.
-
-With Mupen, one would need to make sure also be running Mupen64-recorder and their LiveSplit with a server running. Mupen must be the primary window focus to function correctly.
 
 ## Credits
 

@@ -1,0 +1,8 @@
+livesplit
+git+https://github.com/mmabrouk/chatgpt-wrapper
+datetime
+twitchio
+google-cloud-texttospeech
+playsound
+pyautogui
+pydirectinput
