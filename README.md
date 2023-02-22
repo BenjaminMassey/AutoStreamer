@@ -16,13 +16,15 @@ Auto Streamer requires recent Python. You can install its dependencies with
 python3 -m pip install -r requirements.txt
 ```
 
+There are quite a few odd dependencies, so you may want to run this in some Python virtual environment.
+
 ## Usage
 
 Depending on your settings, you will probably need to be juggling multiple programs, so it is important to make sure you understand what things must be hooked up.
 
-Without Mupen, setup would be as easy as running "run.bat" if on Windows, or simply "main.py" and "twitch.py" concurrently.
+Without Mupen, setup would be as easy as running `main.py` and `twitch.py` concurrently. Use `run.bat` for this on Windows; `run.sh` on Linux.
 
-With Mupen, one would need to make sure also be running Mupen64-recorder and their LiveSplit with a server running. Mupen must be the primary window focus to function correctly.
+With Mupen, make sure to also be running `Mupen64-recorder` and their `LiveSplit` with a server running. Mupen must be the primary window focus to function correctly.
 
 ## References
 
