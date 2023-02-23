@@ -3,6 +3,10 @@
 
 <setting name="twitch_oauth" value="oauth:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
 
+<setting name="twitch_client_id" value="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
+
+<setting name="twitch_client_secret" value="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
+
 <setting name="twitch_channel" value="your channel here" />
 
 <setting name="mupen" value="True" />

@@ -37,6 +37,9 @@ With Mupen, make sure to also be running `Mupen64-recorder` and their `LiveSplit
 - https://code.google.com/archive/p/mupen64-rr/downloads
 - https://youtu.be/V7DK7NrmMPY
 - https://obsproject.com/forum/resources/move-transition.913/
+- https://dev.twitch.tv/docs/api/get-started/
+- https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/
+- https://dev.twitch.tv/docs/authentication/register-app/
 
 ## Credits
 

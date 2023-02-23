@@ -8,3 +8,5 @@ pyautogui
 pydirectinput
 alt-profanity-check
 numpy
+requests
+json
