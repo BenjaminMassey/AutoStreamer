@@ -6,3 +6,5 @@ google-cloud-texttospeech
 playsound
 pyautogui
 pydirectinput
+alt-profanity-check
+numpy

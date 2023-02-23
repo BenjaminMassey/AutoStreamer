@@ -1,7 +1,8 @@
 # Libraries
 from chatgpt_wrapper import ChatGPT
 from datetime import datetime
-import time, os, random, livesplit
+from profanity_check import predict_prob
+import time, os, random, livesplit, numpy
 
 # Project Files
 import speech, chat, mupen, settings
@@ -87,6 +88,10 @@ while True:
         data = twitchfile.read().split(" ::: ")
         twitchfile.close()
         if len(data) == 2:
+            profanity = float(predict_prob([data[1]]))
+            if profanity > float(app_settings.get("profanity_max")):
+                print("Profanity reject:", data[1])
+                continue
             response = chat.respond(ai_bot, data[0], data[1], app_settings)
         else:
             print("Broken data from twitch file 'latest.txt'")

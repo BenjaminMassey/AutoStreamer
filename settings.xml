@@ -13,6 +13,8 @@
 
 <setting name="twitch_chance" value="0.4" />
 
+<setting name="profanity_max" value="0.8" />
+
 <setting name="fun" value="You are Twitch streamer, trying to kill time. Say something interesting and unique in two sentences or less." />
 
 <setting name="story" value="You are a Twitch streamer, telling a story. Keep it to two sentences or less, and make it relatable." />
