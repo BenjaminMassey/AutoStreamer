@@ -11,6 +11,8 @@
 
 <setting name="mupen" value="True" />
 
+<setting name="predictions" value="True" />
+
 <setting name="tas_path" value="path/to/wanted.m64" />
 
 <setting name="google_path" value="path/to/api/key.json" />
