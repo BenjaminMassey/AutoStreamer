@@ -5,11 +5,13 @@ from profanity_check import predict_prob
 import time, os, random, livesplit, numpy
 
 # Project Files
-import speech, chat, mupen, settings, prediction
+import speech, chat, mupen, settings, twitch_api
 
 app_settings = settings.Settings()
 
-do_mupen = bool(app_settings.get("mupen"))
+do_mupen = bool(eval(app_settings.get("mupen")))
+
+predict = bool(eval(app_settings.get("predictions")))
 
 key_data = app_settings.get("google_path")
 
@@ -21,16 +23,18 @@ ai_bot = ChatGPT()
 
 print("ChatGPT AI Bot is set up!")
 
-predict = None
+print("Loading Twitch API...")
+
+tapi = twitch_api.TwitchAPI(\
+    app_settings.get("twitch_channel"),\
+    app_settings.get("twitch_client_id"),\
+    app_settings.get("twitch_client_secret"))
+
+print("Twitch API is set up!")
+
 predict_time = None
 
 if do_mupen:
-    
-    if bool(app_settings.get("predictions")):
-        predict = prediction.Predictor(\
-            app_settings.get("twitch_channel"),\
-            app_settings.get("twitch_client_id"),\
-            app_settings.get("twitch_client_secret"))
     
     ls = livesplit.Livesplit()
 
@@ -61,29 +65,42 @@ if do_mupen:
     ls.startTimer()
     
     if predict is not None:
-        details = prediction.generate()
-        predict.createPrediction(details[0], details[1])
+        details = tapi.generatePrediction()
+        tapi.createPrediction(details[0], details[1])
         predict_time = round(details[2])
         print("predict_time", predict_time)
 
 print("Started!")
+
+overrides = []
 
 while True:
     options = ["!fun", "!story", "!joke", "!mario"]
     message = options[random.randint(0, len(options) - 1)]
     if random.random() < float(eval(app_settings.get("twitch_chance"))):
         message = "!twitch"
-    print("Bot chose:", message)
     
-    #message = input("Input: ")
+    subs = tapi.newSubscribers()
     
-    response = None
-    reset = False
+    if len(subs) > 0:
+        for sub in subs:
+            overrides.append("!sub " + sub)
+            continue
     
     if do_mupen and reset_time is not None and \
         (datetime.now() - start_time).total_seconds() > reset_time:
         message = "!reset"
         print("Actually, RESET")
+            
+    if len(overrides) > 0:
+        message = overrides.pop(0)
+    
+    #message = input("Input: ")
+    
+    print("Bot chose:", message)
+    
+    response = None
+    reset = False
     
     if message == "!exit":
         break
@@ -96,7 +113,7 @@ while True:
     elif message == "!mario":
         response = chat.direct("mario", ai_bot, app_settings)
     elif message[:6] == "!chat ":
-        response = chat.respond(ai_bot, "Developer", message[6:], app_settings)
+        response = chat.respond("Developer", message[6:], ai_bot, app_settings)
     elif message[:6] == "!test ":
         response = message[6:]
     elif message == "!twitch":
@@ -108,7 +125,7 @@ while True:
             if profanity > float(app_settings.get("profanity_max")):
                 print("Profanity reject:", data[1])
                 continue
-            response = chat.respond(ai_bot, data[0], data[1], app_settings)
+            response = chat.respond(data[0], data[1], ai_bot, app_settings)
         else:
             print("Broken data from twitch file 'latest.txt'")
             continue
@@ -117,6 +134,8 @@ while True:
         mupen.end_run()
         response = chat.direct("reset", ai_bot, app_settings)
         reset = True
+    elif message[:5] == "!sub ":
+        response = chat.sub(message[5:], ai_bot, app_settings)
     else:
         response = ai_bot.ask(message)
         
@@ -128,14 +147,14 @@ while True:
         ls.reset()
         if predict is not None:
             win = predict_time <= (datetime.now() - start_time).total_seconds()
-            predict.endPrediction(0 if win else 1)
+            tapi.endPrediction(0 if win else 1)
         mupen.start_tas(app_settings)
         ls.startTimer()
         setResetTime()
         start_time = datetime.now()
         if predict is not None:
-            details = prediction.generate()
-            predict.createPrediction(details[0], details[1])
+            details = tapi.generatePrediction()
+            tapi.createPrediction(details[0], details[1])
             predict_time = round(details[2])
             print("predict_time", predict_time)
         

@@ -33,4 +33,6 @@
 
 <setting name="mario" value="You are a Twitch streamer, playing Super Mario 64 in a 70 star speedrun. Make a one sentence observation of either how good you are at speedrunning or how good Super Mario 64 is." />
 
+<setting name="sub" value="You are a Twitch streamer, responding to the fact that someone just subscribed to your channel. Thank them and say something funny. Keep it to two sentences or less. The subscriber's name is " />
+
 </settings>

@@ -4,7 +4,7 @@ import urllib.request as urlget
 from datetime import timedelta
 import requests, json, webbrowser, random
 
-class Predictor:
+class TwitchAPI:
     
     channel = None
     client_id = None
@@ -15,6 +15,7 @@ class Predictor:
     auth_token = None
     prediction_id = None
     outcome_ids = []
+    subscribers = []
     
     def __init__(self, channel, id, secret):
         self.channel = channel
@@ -24,6 +25,7 @@ class Predictor:
         self.broadcaster_id = self.getBroadcasterId()
         self.auth_code = self.getAuthCode()
         self.auth_token = self.getAuthToken()
+        self.newSubscribers()
     
     def getAccessToken(self):
         url = "https://id.twitch.tv/oauth2/token"
@@ -64,6 +66,7 @@ class Predictor:
         url += "client_id=" + self.client_id + "&"
         url += "redirect_uri=http://localhost:3000&"
         url += "scope=channel%3Amanage%3Apredictions"
+        url += "+channel%3Aread%3Asubscriptions"
         
         webbrowser.open(url)
         
@@ -110,7 +113,7 @@ class Predictor:
             } \
         )
         response = request.json()
-        print(response)
+        
         if "data" in response.keys():
             if "id" in response["data"][0].keys():
                 self.prediction_id = response["data"][0]["id"]
@@ -134,23 +137,45 @@ class Predictor:
             "Client-Id": self.client_id\
         })
         
-        print(request.json())
+    def newSubscribers(self):
+        url = "https://api.twitch.tv/helix/subscriptions"
+        url += "?broadcaster_id=" + self.broadcaster_id
+        
+        request = requests.get(url, headers=\
+        {\
+            "Authorization": "Bearer " + self.auth_token,\
+            "Client-Id": self.client_id\
+        })
+        response = request.json()
+        
+        old_list = self.subscribers
+        self.subscribers = []
+        new_subscribers = []
+        if "data" in response.keys():
+            for datum in response["data"]:
+                if "user_name" in datum.keys():
+                    entry = datum["user_name"]
+                    self.subscribers.append(entry)
+                    if entry not in old_list:
+                        new_subscribers.append(entry)
+        return new_subscribers
 
-def generate():
-    # TODO: think about this generation more
-    time_range = (1 * 60, 46 * 60) # from 1 minute to 46 minutes (in seconds)
-    #time_range = (1 * 60, 2 * 60) # from 1 minutes to 2 minutes (in seconds) (debug)
-    predict_time = None
-    run_rng = random.randint(1, 100)
-    if run_rng != 100:
-        predict_time = ((time_range[1] - time_range[0]) * (run_rng / 100)) + time_range[0]
-        time_str = str(timedelta(seconds=predict_time))[2:]
-    
-    title = "Will this run finish?"
-    if predict_time is not None:
-        title = "Will this run make it to " + time_str + "?"
-    
-    return [title, [ { "title": "Yes" }, { "title": "No" }, ],  predict_time]
+    def generatePrediction(self):
+        # TODO: think about this generation more
+        time_range = (1 * 60, 46 * 60) # from 1 minute to 46 minutes (in seconds)
+        #time_range = (1 * 60, 2 * 60) # from 1 minutes to 2 minutes (in seconds) (debug)
+        predict_time = None
+        run_rng = random.randint(1, 100)
+        if run_rng != 100:
+            predict_time = ((time_range[1] - time_range[0]) * (run_rng / 100)) + time_range[0]
+            time_str = str(timedelta(seconds=predict_time))[2:]
+        
+        title = "Will this run finish?"
+        if predict_time is not None:
+            title = "Will this run make it to " + time_str + "?"
+        
+        return [title, [ { "title": "Yes" }, { "title": "No" }, ],  predict_time]
+
 
 run_example = False
 
@@ -164,9 +189,9 @@ if run_example:
     client_id = app_settings.get("twitch_client_id")
     client_secret = app_settings.get("twitch_client_secret")
 
-    puck = Predictor(channel, client_id, client_secret)
+    api = TwitchAPI(channel, client_id, client_secret)
 
-    puck.createPrediction( "What level will I reach?", \
+    api.createPrediction( "What level will I reach?", \
         [\
             {\
                 "title": "Level 1"\
@@ -184,4 +209,4 @@ if run_example:
         
     result = int(input("Index to win: "))
 
-    puck.endPrediction(result)
+    api.endPrediction(result)
