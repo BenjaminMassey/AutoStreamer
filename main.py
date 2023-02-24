@@ -5,11 +5,11 @@ from profanity_check import predict_prob
 import time, os, random, livesplit, numpy
 
 # Project Files
-import speech, chat, mupen, settings
+import speech, chat, mupen, settings, prediction
 
 app_settings = settings.Settings()
 
-do_mupen = bool(eval(app_settings.get("mupen")))
+do_mupen = bool(app_settings.get("mupen"))
 
 key_data = app_settings.get("google_path")
 
@@ -21,19 +21,29 @@ ai_bot = ChatGPT()
 
 print("ChatGPT AI Bot is set up!")
 
-if do_mupen:
+predict = None
+predict_time = None
 
+if do_mupen:
+    
+    if bool(app_settings.get("predictions")):
+        predict = prediction.Predictor(\
+            app_settings.get("twitch_channel"),\
+            app_settings.get("twitch_client_id"),\
+            app_settings.get("twitch_client_secret"))
+    
     ls = livesplit.Livesplit()
 
     def setResetTime():
         global reset_time
         time_range = (1 * 60, 46 * 60) # from 1 minute to 46 minutes (in seconds)
-        #time_range = (2 * 60, 3 * 60) # from 2 minutes to 3 minutes (in seconds) (debug)
+        #time_range = (1 * 60, 2 * 60) # from 1 minutes to 2 minutes (in seconds) (debug)
         run_rng = random.randint(1, 100)
         if run_rng != 100:
             reset_time = ((time_range[1] - time_range[0]) * (run_rng / 100)) + time_range[0]
         else:
             reset_time = None
+        reset_time = round(reset_time)
         print("Reset time set to", reset_time)
 
     reset_time = None
@@ -49,6 +59,12 @@ if do_mupen:
     mupen.start_tas(app_settings)
     
     ls.startTimer()
+    
+    if predict is not None:
+        details = prediction.generate()
+        predict.createPrediction(details[0], details[1])
+        predict_time = round(details[2])
+        print("predict_time", predict_time)
 
 print("Started!")
 
@@ -110,10 +126,18 @@ while True:
     
     if do_mupen and reset:
         ls.reset()
+        if predict is not None:
+            win = predict_time <= (datetime.now() - start_time).total_seconds()
+            predict.endPrediction(0 if win else 1)
         mupen.start_tas(app_settings)
         ls.startTimer()
         setResetTime()
         start_time = datetime.now()
+        if predict is not None:
+            details = prediction.generate()
+            predict.createPrediction(details[0], details[1])
+            predict_time = round(details[2])
+            print("predict_time", predict_time)
         
     time.sleep(1)
 

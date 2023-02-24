@@ -1,7 +1,8 @@
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
 import urllib.request as urlget
-import requests, json, webbrowser
+from datetime import timedelta
+import requests, json, webbrowser, random
 
 class Predictor:
     
@@ -36,6 +37,7 @@ class Predictor:
 
         if "access_token" in response.keys():
             return response["access_token"]
+        print("Error with access token:", response)
         return None
     
     def getBroadcasterId(self):
@@ -50,9 +52,12 @@ class Predictor:
         if "data" in response.keys():
             if "id" in response["data"][0].keys():
                 return str(response["data"][0]["id"])
+        print("Error with broadcaster id:", response)
         return None
         
     def getAuthCode(self):
+        # TODO: no user input
+    
         url = "https://id.twitch.tv/oauth2/authorize"
         url += "?response_type=code&"
         url += "force_verify=false&"
@@ -68,6 +73,7 @@ class Predictor:
         params = parse_qs(parsed_response.query)
         if "code" in params.keys():
             return params["code"][0]
+        print("Error with auth code:", response)
         return None
     
     def getAuthToken(self):
@@ -84,6 +90,7 @@ class Predictor:
 
         if "access_token" in response.keys():
             return response["access_token"]
+        print("Error with auth token:", response)
         return None
     
     def createPrediction(self, title, outcomes):
@@ -129,6 +136,21 @@ class Predictor:
         
         print(request.json())
 
+def generate():
+    # TODO: think about this generation more
+    time_range = (1 * 60, 46 * 60) # from 1 minute to 46 minutes (in seconds)
+    #time_range = (1 * 60, 2 * 60) # from 1 minutes to 2 minutes (in seconds) (debug)
+    predict_time = None
+    run_rng = random.randint(1, 100)
+    if run_rng != 100:
+        predict_time = ((time_range[1] - time_range[0]) * (run_rng / 100)) + time_range[0]
+        time_str = str(timedelta(seconds=predict_time))[2:]
+    
+    title = "Will this run finish?"
+    if predict_time is not None:
+        title = "Will this run make it to " + time_str + "?"
+    
+    return [title, [ { "title": "Yes" }, { "title": "No" }, ],  predict_time]
 
 run_example = False
 
